@@ -29,9 +29,19 @@ def isExist(uid):
   else:
     return True
   
-def insertArticle(uid, title, content):
-  print(uid, title, content)
-  db.diary.insert_one({'uid': uid, 'title': title, 'content': content})
+def insertArticle(uid, title, content, year, month, date, day):
+  print(uid, title, content, year, month, date, day)
+  db.diary.insert_one(
+    {
+      'uid': uid,
+      'title': title,
+      'content': content,
+      'year': year,
+      'month': month,
+      'date': date,
+      'day': day
+    }
+  )
 
 def getArticle(uid):
   result = list(db.diary.find({"uid":uid}))

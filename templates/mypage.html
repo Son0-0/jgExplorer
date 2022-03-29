@@ -25,6 +25,7 @@
       <h1 class="display-4">환영합니다, {{uid}}님</h1>
       <p class="lead">{{uid}}님의 탐험일지</p>
       <p id="uuid" hidden>{{uid}}</p>
+      <p id="result">{{result}}</p>
     </div>
       <button class="button is-primary text-uppercase writeBtnStyle" id="writeBtn">작성하기</button>
     <div id="writeBox">
@@ -82,8 +83,22 @@
       var inputTitle = $("#inputTitle").val();
       var inputText = $("#inputText").val();
       var uid = document.getElementById("uuid").textContent;
+
+      let today = new Date();
+      let year = today.getFullYear(); // 년도
+      let month = today.getMonth() + 1;  // 월
+      let date = today.getDate();  // 날짜
+      let day = today.getDay();  // 요일
       
-      var postdata = {'uid': uid,'title':inputTitle,'content':inputText};
+      var postdata = {
+        'uid': uid,
+        'title':inputTitle,
+        'content':inputText,
+        'year': year,
+        'month': month,
+        'date': date,
+        'day': day
+      };
       $.ajax({
         type:'POST',
         url: '{{url_for("submitArticle")}}',

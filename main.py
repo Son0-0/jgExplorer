@@ -23,17 +23,24 @@ def submitArticle():
   uid = data['uid']
   title = data['title']
   content = data['content']
-  pymdb.insertArticle(uid, title, content)
+  year = data['year']
+  month = data['month']
+  date = data['date']
+  day = data['day']
+  pymdb.insertArticle(uid, title, content, year, month, date, day)
   return jsonify(result="success")
 
 @app.route('/mypage', methods=['GET', 'POST'])
 def mypage():
   if 'uid' in session:
     uid = session['uid']
-    pymdb.getArticle(uid)
-    return render_template('mypage.html', uid=uid)  
+    result = pymdb.getArticle(uid)
+    if len(result) == 0:
+      return render_template('mypage.html', uid=uid)  
+    else:
+      return render_template('mypage.html', uid=uid, result=result)
   else:
-    return '<HTML><BODY><H1>Login required</H1></BODY></HTML>'
+    return redirect(url_for("home"))
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
