@@ -1,10 +1,39 @@
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, jsonify, flash, session
+from datetime import timedelta
+from flask_jwt_extended import *
 from flask import request
 import pymongo
 import pymdb
 import bcrypt
 
 app = Flask(__name__)
+
+
+# jwt 환경변수 등록
+app.config.update(
+  DEBUG = True,
+  JWT_SECRET_KEY = "THISISSECRETKEYFORJUNGLEJWT"
+)
+
+jwt = JWTManager(app)
+
+@app.route('/submitArticle', methods=['POST'])
+def submitArticle():
+  data = request.get_json()
+  uid = data['uid']
+  title = data['title']
+  content = data['content']
+  pymdb.insertArticle(uid, title, content)
+  return jsonify(result="success")
+
+@app.route('/mypage', methods=['GET', 'POST'])
+def mypage():
+  if 'uid' in session:
+    uid = session['uid']
+    pymdb.getArticle(uid)
+    return render_template('mypage.html', uid=uid)  
+  else:
+    return '<HTML><BODY><H1>Login required</H1></BODY></HTML>'
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -13,28 +42,77 @@ def home():
     uid = data.get('uid')
     upw = data.get('upw')
     
-    plain_text = upw.encode('UTF-8')
-    pw_hash = bcrypt.hashpw(plain_text, bcrypt.gensalt()).hex() # DB에 저장될 값
-    
-    pymdb.register(uid, pw_hash)
-    print(uid, upw, pw_hash)
-    
+    if uid != 'None' and upw != 'None':
+      plain_text = upw.encode('UTF-8')
+
+    if pymdb.isMember(uid) == True:
+      dbdata = pymdb.memberPW(uid)
+      origin_pw = bytes.fromhex(dbdata) # DB에 저장되어 있는 값
+      if bcrypt.checkpw(plain_text, origin_pw) == True: # 로그인 성공 case
+        name = pymdb.extractName(uid)
+        session['uid'] = uid
+        return redirect(url_for("mypage"))
+      else:
+        flash("아이디 및 비밀번호를 다시 확인하세요!", category='error')
+    else:
+      flash("아이디 및 비밀번호를 다시 확인하세요!", category='error')
+      
   return render_template('login.html')
  
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-  if request.method == "POST":
-    data = request.form
-    uid = data.get('uid')
-    upw = data.get('upw')
-    uname = data.get('uname')
-    print(uname, uid, upw)
   return render_template('register.html')
 
-if __name__ == '__main__':
-   app.run('0.0.0.0', port=7800, debug=True)
-   
-@app.route('/mypage', methods=['GET', 'POST'])
-def mypage():
+@app.route('/memberRegister', methods=['POST'])
+def registerMember():
+  data = request.get_json()
+  uid = data['uid']
+  upw = data['upw']
+  uname = data['uname']
+    
+  if pymdb.isExist(uid) == True:
+    plain_text = upw.encode('UTF-8')
+    pw_hash = bcrypt.hashpw(plain_text, bcrypt.gensalt()).hex() # DB에 저장될 값
+    pymdb.register(uname, uid, pw_hash)
+    print("Register Success: ", uname, uid, upw)
+    return jsonify(result="success", result2="등록이 완료되었습니다!")
+  else:
+    print("Register Fail")
+    return jsonify(result="fail", result2="등록에 실패하였습니다. 관리자에게 문의하세요")
+
+
+@app.route('/isExist', methods=['POST'])
+def isExist():
+  data = request.get_json()
+  if pymdb.isExist(data['uid']) == False:
+    return jsonify(result = "fail", result2 = "이미 등록된 아이디 입니다.")
+  else:
+    return jsonify(result = "success", result2 = "사용 가능한 아이디 입니다.")
   
-  return render_template('mypage.html')
+@app.route('/login', methods=["POST"])
+def loginproc():
+  data = request.get_json()
+  uid = data['uid']
+  upw = data['upw']
+  
+  if uid != 'None' and upw != 'None':
+    plain_text = upw.encode('UTF-8')
+
+    if pymdb.isMember(uid) == True:
+      dbdata = pymdb.memberPW(uid)
+      origin_pw = bytes.fromhex(dbdata) # DB에 저장되어 있는 값
+      if bcrypt.checkpw(plain_text, origin_pw) == True: # 로그인 성공 case
+        name = pymdb.extractName(uid)
+        return jsonify(result="success")
+      else:
+        flash("아이디 및 비밀번호를 다시 확인하세요!", category='error')
+        return jsonify(result="fail")
+    else:
+      flash("아이디 및 비밀번호를 다시 확인하세요!", category='error')
+      return jsonify(result="fail")
+    
+if __name__ == '__main__':
+  app.secret_key = 'THISISSECRETKEYFORJUNGLE'
+  app.config['SESSION_TYPE'] = 'filesystem'
+  app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(minutes=5)
+  app.run('0.0.0.0', port=7800, debug=True)
