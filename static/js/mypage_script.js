@@ -1,18 +1,6 @@
-var loginBtn = document.querySelector("#login_btn");
-var uidinput = document.querySelector("#uidinput");
-var upwinput = document.querySelector("#upwinput");
+var submitbtn = document.querySelector("#submit_btn");
 
-uidinput.addEventListener('keyup', listener);
-upwinput.addEventListener('keyup', listener);
-
-function listener() {
-  switch(!(uidinput.value && upwinput.value)) {
-    case true: loginBtn.disabled = true; break;
-    case false: loginBtn.disabled = false; break;
-  }
-}
-
-loginBtn.onclick = function () {
+submitbtn.onclick = function() {
   var signinform = document.createElement("form");
   signinform.setAttribute("method", "POST");
 

@@ -7,40 +7,115 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
   integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/login_style.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+  <!-- JS -->
+  <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+  integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+  crossorigin="anonymous"></script>
   <title>Register Page</title>
 </head>
 <body>
   <div class="container-fluid ps-md-0">
     <div class="row g-0">
-      <div class="d-none d-md-flex col-lg-6">
+      <div class="col-lg-2 col-lg-5 col-lg-6">
         <div class="login d-flex align-items-center py-5">
           <div class="container">
             <div class="row">
-              <div class="col-md-9 col-lg-8 mx-auto">
-                <h3 class="login-heading mb-4">환영합니다!</h3>
-
+              <div class="col-lg-6 col-md-3 mx-auto" id="register-div">
+                <h3 class="login-heading mb-4">탐험일지 | 회원가입</h3>
                 <!-- Sign In Form -->
-                <div class="form-floating mb-3">
-                  <input type="email" class="form-control" id="floatingInput" name="uid" placeholder="아이디">
-                </div>
-                <div class="form-floating mb-3">
-                  <input type="password" class="form-control" id="floatingPassword" name="upw" placeholder="비밀번호">
-                </div>
-
-                <div class="d-grid">
-                  <button class="btn btn-lg btn-primary btn-login text-uppercase fw-bold mb-2" id="signin_btn">로그인</button>
-                  <div class="text-center">
-                    <a class="small" href="/register">계정이 없으신가요?</a>
+                  <div class="form-floating mb-3">
+                    <input type="email" class="form-control" name="uname" id="unameinput" placeholder="이름">
                   </div>
-                </div>
+                  <div class="row form-floating mb-3">
+                    <div class="col-9 mr-auto">
+                      <input type="email" class="form-control" name="uid" id="uidinput" placeholder="ID" check_result="fail">
+                    </div>
+                    <div class="col-3">
+                      <button class="button is-primary" id="overlap_btn" onclick=isExist()>중복</button>
+                    </div>
+                  </div>
+                  <div class="form-floating mb-3">
+                    <input type="password" class="form-control" name="upw" id="upwinput" placeholder="Password">
+                  </div>
+                  <!-- <div class="form-floating mb-3">
+                    <input type="password" class="form-control" placeholder="Password 확인">
+                  </div> -->
+                  <div class="d-grid">
+                    <a href="/">
+                      <button class="button is-primary text-uppercase fw-bold mb-2">취소</button>
+                    </a>
+                    <button class="button is-primary text-uppercase fw-bold mb-2" id="submit_btn" onclick=register() disabled>등록</button>
+                  </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="col-md-8 col-md-4 col-lg-6 bg-image"></div>
+      <div class="col-md-8 col-md-7 col-lg-6 jungle-image"></div>
     </div>
   </div>
-  <script type="text/javascript" src="{{url_for('static', filename='js/login_script.js')}}"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='js/reg_script.js')}}"></script>
+  <script>
+    function isExist() {
+      var uid = $("#uidinput").val();
+      var postdata = {'uid':uid};
+      $.ajax({
+        type:'POST',
+        url: '{{url_for("isExist")}}',
+        data: JSON.stringify(postdata),
+        dataType : 'JSON',
+        contentType: "application/json",
+        success: function(data) {
+          alert(data.result2)
+          if (data.result == "fail") {
+            var uidinput = document.getElementById("uidinput");
+            uidinput.value = null;
+          } else {
+            var uidinput = document.getElementById("uidinput");
+            uidinput.setAttribute("check_result", "pass");
+          }
+        },
+        error: function(request, status, error) {
+          console.log("code:" + request.status + "\n" + "error:" + error)
+        }
+      })
+    }
+
+    function register() {
+      var uname = $("#unameinput").val();
+      var uid = $("#uidinput").val();
+      var upw = $("#upwinput").val();
+
+      if ($("#uidinput").attr('check_result') == 'fail') {
+        alert("아이디 중복확인이 필요합니다.")
+      } else {
+        var postdata = {
+          'uname':uname,
+          'uid': uid,
+          'upw': upw
+        };
+        $.ajax({
+          type:'POST',
+          url: '{{url_for("registerMember")}}',
+          data: JSON.stringify(postdata),
+          dataType : 'JSON',
+          contentType: "application/json",
+          success: function(data) {
+            alert(data.result2)
+            if (data.result == "fail") {
+              location.replace("/register")
+            } else {
+              location.replace("/")
+            }
+          },
+          error: function(request, status, error) {
+            console.log("code:" + request.status + "\n" + "error:" + error)
+          }
+        })
+      }
+    }
+  </script>
 </body>
 </html>
