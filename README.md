@@ -1,4 +1,4 @@
-<img width="1136" alt="스크린샷 2022-03-30 오후 8 15 08" src="https://user-images.githubusercontent.com/81317358/160828734-ce9fa5cf-70dd-4a28-9a03-3b77936872b7.png">
+<img width="1136" alt="스크린샷 2022-03-30 오후 8 15 08" src="https://user-images.githubusercontent.com/81317358/160832993-b7346aa9-5752-4d22-b96a-4b04c06d7529.png">
 
 # SW 정글 탐험 일지
 ## Description
