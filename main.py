@@ -51,17 +51,6 @@ def deleteArticle(id):
   else:
     return jsonify(result="fail")
 
-# @app.route('/mypage', methods=['GET', 'POST'])
-# def mypage():
-#   if 'uid' in session:
-#     uid = session['uid']
-#     uname = pymdb.getName(uid)
-#     date = pymdb.getDate(uid)
-#     print(date)
-#     return render_template('mypage.html', uid=uid, uname=uname)
-#   else:
-#     return redirect(url_for("home"))
-
 @app.route('/', methods=['GET', 'POST'])
 def home():
   if 'uid' in session:
@@ -134,4 +123,4 @@ if __name__ == '__main__':
   app.secret_key = 'THISISSECRETKEYFORJUNGLE'
   app.config['SESSION_TYPE'] = 'filesystem'
   app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(minutes=5)
-  app.run('0.0.0.0', port=5500, debug=True)
+  app.run('0.0.0.0', port=5000, debug=True)
