@@ -50,8 +50,19 @@ def deleteArticle(id):
   else:
     return jsonify(result="fail")
 
-@app.route('/mypage', methods=['GET', 'POST'])
-def mypage():
+# @app.route('/mypage', methods=['GET', 'POST'])
+# def mypage():
+#   if 'uid' in session:
+#     uid = session['uid']
+#     uname = pymdb.getName(uid)
+#     date = pymdb.getDate(uid)
+#     print(date)
+#     return render_template('mypage.html', uid=uid, uname=uname)
+#   else:
+#     return redirect(url_for("home"))
+
+@app.route('/', methods=['GET', 'POST'])
+def home():
   if 'uid' in session:
     uid = session['uid']
     uname = pymdb.getName(uid)
@@ -59,50 +70,11 @@ def mypage():
     print(date)
     return render_template('mypage.html', uid=uid, uname=uname)
   else:
-    return redirect(url_for("home"))
-
-@app.route('/', methods=['GET', 'POST'])
-def home():
-  if request.method == "POST":
-    data = request.form
-    uid = data.get('uid')
-    upw = data.get('upw')
-    
-    if uid != 'None' and upw != 'None':
-      plain_text = upw.encode('UTF-8')
-
-    if pymdb.isMember(uid) == True:
-      dbdata = pymdb.memberPW(uid)
-      origin_pw = bytes.fromhex(dbdata) # DB에 저장되어 있는 값
-      if bcrypt.checkpw(plain_text, origin_pw) == True: # 로그인 성공 case
-        name = pymdb.extractName(uid)
-        session['uid'] = uid
-        return redirect(url_for("mypage")) # alert
-      else:
-        flash("아이디 및 비밀번호를 다시 확인하세요!", category='error')
-    else:
-      flash("아이디 및 비밀번호를 다시 확인하세요!", category='error')
-      
-  return render_template('login.html')
+    return redirect(url_for("login"))
  
 @app.route('/register', methods=['GET', 'POST'])
 def register():
   return render_template('register.html')
-
-@app.route('/test', methods=['GET', 'POST'])
-def test():
-  if 'uid' in session:
-    uid = session['uid']
-    uname = pymdb.getName(uid)
-    result = pymdb.getArticle(uid)
-    date = pymdb.getDate(uid)
-    print(date)
-    if len(result) == 0:
-      return render_template('test.html', uid=uid, uname=uname)
-    else:
-      return render_template('test.html', uid=uid, result=result, uname=uname)
-  else:
-    return redirect(url_for("home"))
 
 @app.route('/memberRegister', methods=['POST'])
 def registerMember():
@@ -130,27 +102,32 @@ def isExist():
   else:
     return jsonify(result = "success", result2 = "사용 가능한 아이디 입니다.")
   
-@app.route('/login', methods=["POST"])
-def loginproc():
-  data = request.get_json()
-  uid = data['uid']
-  upw = data['upw']
-  
-  if uid != 'None' and upw != 'None':
-    plain_text = upw.encode('UTF-8')
+@app.route('/login', methods=["GET", "POST"])
+def login():
+  if request.method == "POST":
+    data = request.form
+    uid = data.get('uid')
+    upw = data.get('upw')
+    print(uid, upw)
+    
+    if uid != 'None' and upw != 'None':
+      plain_text = upw.encode('UTF-8')
 
     if pymdb.isMember(uid) == True:
       dbdata = pymdb.memberPW(uid)
       origin_pw = bytes.fromhex(dbdata) # DB에 저장되어 있는 값
       if bcrypt.checkpw(plain_text, origin_pw) == True: # 로그인 성공 case
         name = pymdb.extractName(uid)
-        return jsonify(result="success")
+        session['uid'] = uid
+        return redirect(url_for("home")) # alert
       else:
         flash("아이디 및 비밀번호를 다시 확인하세요!", category='error')
-        return jsonify(result="fail")
+        return render_template('login.html')
     else:
       flash("아이디 및 비밀번호를 다시 확인하세요!", category='error')
-      return jsonify(result="fail")
+      return render_template('login.html')
+  else:
+    return render_template('login.html')
     
 if __name__ == '__main__':
   app.secret_key = 'THISISSECRETKEYFORJUNGLE'

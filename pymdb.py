@@ -61,6 +61,7 @@ def getArticle(uid):
   return return_data
 
 def getDate(uid):
+  temp_date = []
   result = list(db.diary.find({"uid":uid}))
   
   result_date = {}
@@ -69,9 +70,11 @@ def getDate(uid):
   for dates in result:
     temp = {}
     date = str(dates['year']) + "-" + str(dates['month']) + "-" + str(dates['date'])
-    temp['date'] = date
-    temp['level'] = dates['level']
-    udate.append(temp)
+    if date not in temp_date:
+      temp_date.append(date)
+      temp['date'] = date
+      temp['level'] = dates['level']
+      udate.append(temp)
     
   result_date[uid] = udate
   
