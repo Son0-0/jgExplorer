@@ -30,15 +30,20 @@ def submitArticle():
   pymdb.insertArticle(uid, title, content, year, month, date, day)
   return jsonify(result="success")
 
+@app.route('/getArticle/<uid>', methods=['GET'])
+def getArticle(uid):
+  result = pymdb.getArticle(uid)
+  print(result)
+  return jsonify(result="success", result2=result)
+
 @app.route('/mypage', methods=['GET', 'POST'])
 def mypage():
   if 'uid' in session:
     uid = session['uid']
-    result = pymdb.getArticle(uid)
-    if len(result) == 0:
-      return render_template('mypage.html', uid=uid)  
-    else:
-      return render_template('mypage.html', uid=uid, result=result)
+    uname = pymdb.getName(uid)
+    date = pymdb.getDate(uid)
+    print(date)
+    return render_template('mypage.html', uid=uid, uname=uname)
   else:
     return redirect(url_for("home"))
 
@@ -58,7 +63,7 @@ def home():
       if bcrypt.checkpw(plain_text, origin_pw) == True: # 로그인 성공 case
         name = pymdb.extractName(uid)
         session['uid'] = uid
-        return redirect(url_for("mypage"))
+        return redirect(url_for("mypage")) # alert
       else:
         flash("아이디 및 비밀번호를 다시 확인하세요!", category='error')
     else:
@@ -69,6 +74,21 @@ def home():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
   return render_template('register.html')
+
+@app.route('/test', methods=['GET', 'POST'])
+def test():
+  if 'uid' in session:
+    uid = session['uid']
+    uname = pymdb.getName(uid)
+    result = pymdb.getArticle(uid)
+    date = pymdb.getDate(uid)
+    print(date)
+    if len(result) == 0:
+      return render_template('test.html', uid=uid, uname=uname)
+    else:
+      return render_template('test.html', uid=uid, result=result, uname=uname)
+  else:
+    return redirect(url_for("home"))
 
 @app.route('/memberRegister', methods=['POST'])
 def registerMember():

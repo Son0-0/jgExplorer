@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
-  <title>{{uid}}Main Page</title>
+  <title>탐험일지</title>
   <style>
     .wrap {
       width: 900px;
@@ -22,10 +22,9 @@
 <body>
   <div class="wrap">
     <div class="jumbotron" style="background-color: #00D1B2; color: white;">
-      <h1 class="display-4">환영합니다, {{uid}}님</h1>
-      <p class="lead">{{uid}}님의 탐험일지</p>
+      <h1 class="display-4">환영합니다, {{uname}}님</h1>
+      <p class="lead">{{uname}}님의 탐험일지</p>
       <p id="uuid" hidden>{{uid}}</p>
-      <p id="result">{{result}}</p>
     </div>
       <button class="button is-primary text-uppercase writeBtnStyle" id="writeBtn">작성하기</button>
     <div id="writeBox">
@@ -59,6 +58,14 @@
       </div> -->
       <button id="submit_btn" class="button is-primary text-uppercase fw-bold mb-2" style="float: right;" onclick=submit()>등록</button>
     </div>
+    <div id="cardList" class="card-columns">
+      <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">${diary.title}</h5>
+            <p class="card-text">${diary.content}</p>
+        </div>
+      </div>
+    </div>
   </div>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
@@ -66,6 +73,8 @@
     $(document).ready(function() {
       const $writeBtn = $("#writeBtn");
       const $writeBox = $("#writeBox");
+      const $cardList = $("#cardList");
+      read(); //읽어옴?
       $writeBox.hide() //먼저 안 보이게
       $writeBtn.on('click', function(){
         if ($writeBtn.text() == '작성하기'){
@@ -83,7 +92,7 @@
       var inputTitle = $("#inputTitle").val();
       var inputText = $("#inputText").val();
       var uid = document.getElementById("uuid").textContent;
-
+    
       let today = new Date();
       let year = today.getFullYear(); // 년도
       let month = today.getMonth() + 1;  // 월
@@ -112,6 +121,37 @@
           }
         }
       })
+    }
+    function read(){
+      console.log('{{uid}}');
+      $.ajax({
+        type: 'GET',
+        url: '/getArticle/' + '{{uid}}',
+        success: function(data){
+          console.log(data) //데이터 불러지고 있음 삭제해야할 코드
+          if (data.result == "success"){
+            // $cardList.empty(); //없애고 다시 띄우는, 새로고침
+            for(let i=0; i<data.result2.length; i++){ //길이만큼 돌리고
+              console.log(data.result2[i]);
+              $cardList.append(makediary(data.result2[i])); //i만큼 붙임
+            }
+          }
+        }
+      })
+    }
+    function makediary(diary){
+      alert(here)
+      var title = diary.title
+      console.log(title)
+      
+      return `
+      <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">${diary.title}</h5>
+            <p class="card-text">${diary.content}</p>
+        </div>
+      </div>
+      `;
     }
   </script>
 </body>

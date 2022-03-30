@@ -45,4 +45,33 @@ def insertArticle(uid, title, content, year, month, date, day):
 
 def getArticle(uid):
   result = list(db.diary.find({"uid":uid}))
-  return result
+  
+  return_data = []
+  
+  for data in result:
+    temp = {}
+    temp['title'] = data['title']
+    temp['content'] = data['content']
+    date = str(data['year']) + "-" + str(data['month']) + "-" + str(data['date'])
+    temp['date'] = date
+    return_data.append(temp)
+    
+  return return_data
+
+def getDate(uid):
+  result = list(db.diary.find({"uid":uid}))
+  
+  result_date = {}
+  udate = []
+
+  for dates in result:
+    date = str(dates['year']) + "-" + str(dates['month']) + "-" + str(dates['date'])
+    udate.append(date)
+    
+  result_date[uid] = udate
+  
+  return result_date
+
+def getName(uid):
+  result = list(db.users.find({'uid':uid}))
+  return result[0]['uname']
