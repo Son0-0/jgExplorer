@@ -24,6 +24,45 @@
       border-radius: 5px;
       padding: 50px;
     }
+    rect {
+      color: #000;
+    }
+    svg{ background-color: rgb(255, 255, 255);}
+    .jungleday[data-level = "0"] {
+      fill: lightgray  ;
+      outline: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .jungleday[data-level = "1"] {
+      fill: rgb(0, 50, 21);
+      outline: 1px solid rgba(255, 255, 255, 0.25);
+    }
+    .jungleday[data-level = "2"] {
+      fill: rgb(0,100,21);
+      outline: 1px solid rgba(255, 255, 255, 0.25);
+    }
+    .jungleday[data-level = "3"] {
+      fill: rgb(0,150,21);
+      outline: 1px solid rgba(255, 255, 255, 0.25);
+    }
+    .jungleday[data-level = "4"] {
+      fill: rgb(0,200,21);
+      outline: 1px solid rgba(255, 255, 255, 0.25);
+    }
+    .jungleday[data-level = "5"] {
+      fill: rgb(0,250,21);
+      outline: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    #tooltip {
+      background: rgb(131, 129, 121);
+      border-radius: 5px;
+      padding: 5px;
+      font-size: 13px;
+      color: rgb(255,255,255);
+      font-weight: bold;
+    }
+    .jumbotron {
+      padding-bottom: 30px;
+    }
   </style>
 </head>
 <body>
@@ -35,6 +74,11 @@
       <a href="/logout">
         <button class="button is-light text-uppercase" style="float: right; font-size: small;">로그아웃</button>
       </a>
+      <div id="tooltip" display="none" style="position: absolute; display: none;"></div>
+      <svg width="400" height="104" xmlns="http://www.w3.org/2000/svg">
+        <g transform=translate(10,10) id="jungleBoard">
+        </g>
+      </svg>
     </div>
       <button class="button is-primary text-uppercase writeBtnStyle" id="writeBtn">작성하기</button>
     <div id="writeBox">
@@ -76,7 +120,7 @@
       const $writeBtn = $("#writeBtn");
       const $writeBox = $("#writeBox");
       const $cardList = $("#cardList");
-      read(); //읽어옴?
+      read();
       $writeBox.hide() //먼저 안 보이게
       $writeBtn.on('click', function(){
         if ($writeBtn.text() == '작성하기'){
@@ -87,14 +131,6 @@
           $writeBtn.text('작성하기')
         }
       })
-
-      $("#inputTitle").keyup(function(e){
-        if(event.replace(/\s| /gi,"").length == 0){
-          alert('제목을 입력해주세요.')
-          $(this).focus()
-        }
-      })
-
     })
   </script>
   <script>
@@ -124,7 +160,13 @@
       let today = new Date();
       let year = today.getFullYear(); // 년도
       let month = today.getMonth() + 1;  // 월
+      if (month < 10) {
+        month = "0" + month
+      }
       let date = today.getDate();  // 날짜
+      if (date < 10) {
+        date = "0" + date
+      }
       let day = today.getDay();  // 요일
 
       var e = document.getElementById("selectpicker");
@@ -156,6 +198,7 @@
     }
     function read(){
       console.log('{{uid}}');
+
       $.ajax({
         type: 'GET',
         url: '/getArticle/' + '{{uid}}',
@@ -167,6 +210,7 @@
               $("#cardList").append(makediary(data.result2[i]))
             }
           }
+          make_jungler(data.date)
         }
       })
     }
@@ -201,6 +245,96 @@
       div1.appendChild(div2);
 
       return div1;
+    }
+
+    //SVG는 HTML이 아니라서 append사용 불가. 하여 아래와 같은 꼼수 사용
+    function makeSVG(tag, attrs) {
+      var el= document.createElementNS('http://www.w3.org/2000/svg', tag);
+      for (var k in attrs)
+          el.setAttribute(k, attrs[k]);
+      return el;
+    }
+    function calculate_date(today) {
+      let dateFrom = new Date("2022-03-28");
+      let dateTo = new Date(today);
+      let test = new Date("2022-04-03");
+      // 밀리초 단위를 일단위로 변환
+      let diffDate = dateFrom.getTime() - dateTo.getTime();
+      console.log(dateTo.getTime() + "taday");
+      console.log(test.getTime());
+      let dateDays = Math.abs(diffDate / (1000 * 24 * 60 * 60));
+      return dateDays;
+    }
+    function translate_i_to_date(i) {
+      let dateFrom = new Date("2022-03-28");
+      let translatedDate = new Date(dateFrom.setDate(dateFrom.getDate() + i));
+      return translatedDate.toDateString();
+    }
+    function make_jungler(tempObject) {
+      //일지 최신 작성일 인덱스
+      let dayIndex = tempObject.length - 1;
+      console.log(dayIndex);
+      // JSON 객체가 null이면 아무것도 반환하지 않음
+      if (dayIndex < 0) {
+        return;
+      }
+      //일지 최신 작성일
+      let latestDay = calculate_date(tempObject[dayIndex].date);
+      console.log(tempObject[dayIndex].date);
+      let currentIndex = 0;
+      //나중에 객체랑 length 추가
+      for (let i = 0; i <= latestDay; i++) {
+        // currentIndex가 dayIndex를 초과하면 아래 '1.label, level 정의' 코드 메모리접근 오류발생하므로 미리 방지
+        if (currentIndex > dayIndex) {
+          break;
+        }
+        // 1.label,level 정의
+        let label = calculate_date(tempObject[currentIndex].date);
+        
+        let level = tempObject[currentIndex].level;
+        let quo = parseInt(i / 7);
+        let rem = i % 7;
+        let xAxis = quo * 14;
+        let yAxix = rem * 13;
+        if (rem == 0) {
+          //SVG는 HTML이 아니라서 append사용 불가. 하여 아래와 같은 꼼수 사용
+          var group= makeSVG('g', {transform: "translate("+String(xAxis)+",0)", id: "jungleBoardChild" + String(quo)});
+          document.getElementById('jungleBoard').appendChild(group);
+        }
+        if (label == i) {
+          var rect= makeSVG('rect', {width: 10, height: 10, x: 14, y: yAxix, rx: 2, ry: 2, class: "jungleday", "data-date": translate_i_to_date(i), "data-level": level, onmousemove: "showTooltip(evt)", onmouseout: "hideTooltip()"});
+          document.getElementById('jungleBoardChild'+ String(quo)).appendChild(rect);
+          currentIndex++;
+        } else {
+          var rect= makeSVG('rect', {width: 10, height: 10, x: 14, y: yAxix, rx: 2, ry: 2, class: "jungleday", "data-date": translate_i_to_date(i), "data-level": "0", onmousemove: "showTooltip(evt)", onmouseout: "hideTooltip()"});
+          document.getElementById('jungleBoardChild'+ String(quo)).appendChild(rect);
+        }
+      }
+    }
+    function showTooltip(evt) {
+      let tooltip = document.getElementById("tooltip");
+      let level = evt.target.dataset.level;
+      if(level == "0") {
+        tooltip.innerHTML = "empty, ";
+      } else if(level == "1") {
+        tooltip.innerHTML = "최악, ";
+      } else if(level == "2") {
+        tooltip.innerHTML = "별로, ";
+      } else if(level == "3") {
+        tooltip.innerHTML = "그냥, ";
+      } else if(level == "4") {
+        tooltip.innerHTML = "좋음, "
+      } else {
+        tooltip.innerHTML = "최고, "
+      }
+      tooltip.innerHTML += evt.target.dataset.date;
+      tooltip.style.display = "block";
+      tooltip.style.left = evt.pageX - 40 + 'px';
+      tooltip.style.top = evt.pageY + 10 + 'px';
+    }
+    function hideTooltip() {
+      var tooltip = document.getElementById("tooltip");
+      tooltip.style.display = "none";
     }
   </script>
 </body>

@@ -13,3 +13,15 @@ function listener() {
     case false: submitBtn.disabled = false; break;
   }
 }
+
+var overlap_btn = document.querySelector("#overlap_btn");
+var idinput = document.querySelector("#uidinput");
+
+idinput.addEventListener('keyup', listener2);
+
+function listener2() {
+  switch(!(idinput.value)) {
+    case true: overlap_btn.disabled = true; break;
+    case false: overlap_btn.disabled = false; break;
+  }
+}

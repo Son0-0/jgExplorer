@@ -30,10 +30,10 @@
                   </div>
                   <div class="row form-floating mb-3">
                     <div class="col-9 mr-auto">
-                      <input type="email" class="form-control" name="uid onlyEN" id="uidinput" placeholder="ID" check_result="fail">
+                      <input type="text" class="form-control" name="uid onlyEN" id="uidinput" placeholder="ID" check_result="fail">
                     </div>
                     <div class="col-3">
-                      <button class="button is-primary" id="overlap_btn" onclick=isExist()>중복</button>
+                      <button class="button is-primary" id="overlap_btn" onclick=isExist() disabled>중복</button>
                     </div>
                   </div>
                   <div class="form-floating mb-3">
@@ -67,6 +67,20 @@
       if(!(event.keyCode>=37 && event.keyCode<=40)){
         var inputVal = $(this).val();
         $(this).val(inputVal.replace(/[^a-z0-9]/gi,''));
+      }
+    })
+
+    $("#upwinput").keyup(function(e){
+      if(!(event.keyCode>=37 && event.keyCode<=40)){
+        var inputVal = $(this).val();
+        $(this).val(inputVal.replace(/[^ㄱ-힣a-z0-9]/gi,''));
+      }
+    })
+
+    $("#pw2").keyup(function(e){
+      if(!(event.keyCode>=37 && event.keyCode<=40)){
+        var inputVal = $(this).val();
+        $(this).val(inputVal.replace(/[^ㄱ-힣a-z0-9]/gi,''));
       }
     })
 
@@ -104,10 +118,8 @@
       let p2 = document.getElementById('pw2').value;
 
       if (p1 != p2){
-        alert('일치하지 않습니다.')
+        alert('비밀번호가 일치하지 않습니다.')
         return false
-      } else{
-        alert('일치합니다.')
       }
 
       if ($("#uidinput").attr('check_result') == 'fail') {

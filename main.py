@@ -40,7 +40,8 @@ def submitArticle():
 @app.route('/getArticle/<uid>', methods=['GET'])
 def getArticle(uid):
   result = pymdb.getArticle(uid)
-  return jsonify(result="success", result2=result)
+  date = pymdb.getDate(uid)
+  return jsonify(result="success", result2=result, date=date)
 
 @app.route('/deleteArticle/<id>', methods=['GET'])
 def deleteArticle(id):

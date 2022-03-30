@@ -64,7 +64,6 @@ def getDate(uid):
   temp_date = []
   result = list(db.diary.find({"uid":uid}))
   
-  result_date = {}
   udate = []
 
   for dates in result:
@@ -75,10 +74,8 @@ def getDate(uid):
       temp['date'] = date
       temp['level'] = dates['level']
       udate.append(temp)
-    
-  result_date[uid] = udate
   
-  return result_date
+  return udate
 
 def getName(uid):
   result = list(db.users.find({'uid':uid}))
