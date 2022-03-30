@@ -1,10 +1,11 @@
 <img width="1136" alt="스크린샷 2022-03-30 오후 8 15 08" src="https://user-images.githubusercontent.com/81317358/160832993-b7346aa9-5752-4d22-b96a-4b04c06d7529.png">
 
-# SW 정글 탐험 일지
+# [SW 정글 탐험 일지](http://jgexplorer.shop/)
 ## Description
 - 5개월간의 정글에서의 일상을 기록
   - Github 잔디심기처럼 일기를 작성한 일자에 잔디가 심기도록 구현
   - 일기를 삭제하는 것은 가능하나 수정은 불가능하도록 제한
+  - http://jgexplorer.shop/
 
 ## Installation
 1. 레포지토리 클론  
