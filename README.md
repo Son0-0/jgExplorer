@@ -11,7 +11,7 @@
 ```pip install -r requirements.txt```
 3. 서버 내 MongoDB 설치
 
-## How to run your Bot
+## How to run your Site
 1. main.py 파일 실행  
 ```python3 main.py``` or ```python main.py```  
 
