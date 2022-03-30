@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+from bson.objectid import ObjectId
 client = MongoClient('localhost', 27017)
 db = client.user
 
@@ -29,13 +30,13 @@ def isExist(uid):
   else:
     return True
   
-def insertArticle(uid, title, content, year, month, date, day):
-  print(uid, title, content, year, month, date, day)
+def insertArticle(uid, title, content, level, year, month, date, day):
   db.diary.insert_one(
     {
       'uid': uid,
       'title': title,
       'content': content,
+      'level': level,
       'year': year,
       'month': month,
       'date': date,
@@ -54,6 +55,7 @@ def getArticle(uid):
     temp['content'] = data['content']
     date = str(data['year']) + "-" + str(data['month']) + "-" + str(data['date'])
     temp['date'] = date
+    temp['_id'] = str(data['_id'])
     return_data.append(temp)
     
   return return_data
@@ -65,8 +67,11 @@ def getDate(uid):
   udate = []
 
   for dates in result:
+    temp = {}
     date = str(dates['year']) + "-" + str(dates['month']) + "-" + str(dates['date'])
-    udate.append(date)
+    temp['date'] = date
+    temp['level'] = dates['level']
+    udate.append(temp)
     
   result_date[uid] = udate
   
@@ -75,3 +80,10 @@ def getDate(uid):
 def getName(uid):
   result = list(db.users.find({'uid':uid}))
   return result[0]['uname']
+
+def deleteArticle(_id):
+  try:
+    db.diary.delete_one({'_id': ObjectId(_id)})
+    return True
+  except:
+    return False

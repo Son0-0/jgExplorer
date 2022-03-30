@@ -17,24 +17,38 @@ app.config.update(
 
 jwt = JWTManager(app)
 
+@app.route('/logout')
+def logout():
+  session.pop('uid', None)
+  return redirect(url_for('home'))
+
+
 @app.route('/submitArticle', methods=['POST'])
 def submitArticle():
   data = request.get_json()
   uid = data['uid']
   title = data['title']
   content = data['content']
+  level = data['level']
   year = data['year']
   month = data['month']
   date = data['date']
   day = data['day']
-  pymdb.insertArticle(uid, title, content, year, month, date, day)
+  pymdb.insertArticle(uid, title, content, level, year, month, date, day)
   return jsonify(result="success")
 
 @app.route('/getArticle/<uid>', methods=['GET'])
 def getArticle(uid):
   result = pymdb.getArticle(uid)
-  print(result)
   return jsonify(result="success", result2=result)
+
+@app.route('/deleteArticle/<id>', methods=['GET'])
+def deleteArticle(id):
+  result = pymdb.deleteArticle(id)
+  if result == True:
+    return jsonify(result="success")
+  else:
+    return jsonify(result="fail")
 
 @app.route('/mypage', methods=['GET', 'POST'])
 def mypage():
