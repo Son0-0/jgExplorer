@@ -156,4 +156,4 @@ if __name__ == '__main__':
   app.secret_key = 'THISISSECRETKEYFORJUNGLE'
   app.config['SESSION_TYPE'] = 'filesystem'
   app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(minutes=5)
-  app.run('0.0.0.0', port=7800, debug=True)
+  app.run('0.0.0.0', port=5500, debug=True)
