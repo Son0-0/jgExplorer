@@ -87,6 +87,14 @@
           $writeBtn.text('작성하기')
         }
       })
+
+      $("#inputTitle").keyup(function(e){
+        if(event.replace(/\s| /gi,"").length == 0){
+          alert('제목을 입력해주세요.')
+          $(this).focus()
+        }
+      })
+
     })
   </script>
   <script>
