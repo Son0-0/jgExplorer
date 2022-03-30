@@ -66,5 +66,16 @@
     </div>
   </div>
   <script type="text/javascript" src="{{url_for('static', filename='js/login_script.js')}}"></script>
+  <script>
+    const $upwinput = $("#upwinput")
+
+    $upwinput.on('keydown', function(evnet){ //enter키 이벤트 걸어둠, pw inputbox 안에서 
+      if (evnet.keyCode ==13){
+        $("#login_btn").click();
+      }
+    })
+
+
+  </script>
 </body>
 </html>
