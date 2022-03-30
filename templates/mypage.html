@@ -270,7 +270,11 @@
       let translatedDate = new Date(dateFrom.setDate(dateFrom.getDate() + i));
       return translatedDate.toDateString();
     }
-    function make_jungler(tempObject) {
+    function make_jungler(unSortedObject) {
+      let tempObject = unSortedObject.sort(function(a, b){
+        return (a.date).replace('-','').replace('-','') - b.date.replace('-','').replace('-','');
+      });
+      
       //일지 최신 작성일 인덱스
       let dayIndex = tempObject.length - 1;
       console.log(dayIndex);
