@@ -13,18 +13,20 @@
 </head>
 <body>
   <div class="wrap">
-    <div class="jumbotron" style="background-color: #00D1B2; color: white; position: relative;">
+    <div class="jumbotron" style="background-color: #00D1B2; color: white;">
       <h1 class="display-4" style="font-weight: bold;">환영합니다, {{uname}}님</h1>
       <p class="lead" style="font-weight: bold;">{{uname}}님의 탐험일지</p>
       <p id="uuid" hidden>{{uid}}</p>
-      <a href="/logout">
-        <button class="button is-light text-uppercase" style="float: right;position:absolute; right: 10px; bottom: 50px;">로그아웃</button>
-      </a>
       <div id="tooltip" display="none" style="position: absolute; display: none;"></div>
       <svg width="400" height="104" xmlns="http://www.w3.org/2000/svg">
         <g transform=translate(10,10) id="jungleBoard">
         </g>
       </svg>
+      <div>
+        <a href="/logout">
+          <button class="button is-light text-uppercase" style="float: right">로그아웃</button>
+        </a>
+      </div>
     </div>
       <button class="button is-primary text-uppercase writeBtnStyle" id="writeBtn">작성하기</button>
     <div id="writeBox">
@@ -279,7 +281,7 @@
       }
       tooltip.innerHTML += evt.target.dataset.date;
       tooltip.style.display = "block";
-      tooltip.style.left = evt.pageX - 40 + 'px';
+      tooltip.style.left = evt.pageX - 50 + 'px';
       tooltip.style.top = evt.pageY + 10 + 'px';
     }
     function hideTooltip() {
