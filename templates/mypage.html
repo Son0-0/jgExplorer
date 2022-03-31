@@ -39,18 +39,18 @@
       <div class="row">
         <div class="form-group col-8">
           <select class="form-control" id="selectpicker">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3" selected>3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
+            <option value="1">최하</option>
+            <option value="2">하</option>
+            <option value="3" selected>중</option>
+            <option value="4">상</option>
+            <option value="5">최상</option>
           </select>
         </div>
         <button id="submit_btn" class="button is-primary text-uppercase fw-bold mb-2" style="float: right;" onclick=submit() disabled>등록</button>
       </div>
     </div>
     <p></p>
-    <div id="cardList" class="card-columns">
+    <div id="cardList" class="row">
     </div>
   </div>
   <script type="text/javascript" src="{{url_for('static', filename='js/mypage_script.js')}}"></script>
@@ -101,7 +101,7 @@
     function submit() {
       var inputTitle = $("#inputTitle").val();
       var inputText = $("#inputText").val();
-      var uid = document.getElementById("uuid").textContent;
+      var uid = document.getElementById("uuid").innerText;
     
       let today = new Date();
       let year = today.getFullYear(); // 년도
@@ -162,7 +162,7 @@
     }
     function makediary(diary){
       var div1 = document.createElement("div");
-      div1.setAttribute('class', 'card');
+      div1.setAttribute('class', 'card col-4');
       div1.setAttribute('id', diary._id);
       var div2 = document.createElement("div");
       div2.setAttribute('class', 'card-body');
@@ -265,17 +265,17 @@
       let tooltip = document.getElementById("tooltip");
       let level = evt.target.dataset.level;
       if(level == "0") {
-        tooltip.innerHTML = "empty, ";
+        tooltip.innerHTML = "";
       } else if(level == "1") {
-        tooltip.innerHTML = "최악, ";
+        tooltip.innerHTML = "최하, ";
       } else if(level == "2") {
-        tooltip.innerHTML = "별로, ";
+        tooltip.innerHTML = "하, ";
       } else if(level == "3") {
-        tooltip.innerHTML = "그냥, ";
+        tooltip.innerHTML = "중, ";
       } else if(level == "4") {
-        tooltip.innerHTML = "좋음, "
+        tooltip.innerHTML = "상, "
       } else {
-        tooltip.innerHTML = "최고, "
+        tooltip.innerHTML = "최상, "
       }
       tooltip.innerHTML += evt.target.dataset.date;
       tooltip.style.display = "block";
